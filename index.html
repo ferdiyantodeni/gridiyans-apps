@@ -1,86 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gridiyans Technology</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <title>Gridiyans Apps - Future Technology</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: #f4f7fa;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f8fb;
       color: #333;
     }
     header {
-      background-color: #0d1b2a;
+      background-color: #7ed6df;
       color: white;
-      padding: 1.5rem 2rem;
       text-align: center;
+      padding: 2rem 1rem;
+    }
+    header img {
+      max-width: 120px;
     }
     header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-    .hero {
-      background: linear-gradient(to right, #00b4db, #0083b0);
-      color: white;
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-    .hero h2 {
-      margin: 0 0 1rem;
       font-size: 2.5rem;
+      margin: 0.5rem 0 0;
+      color: white;
     }
-    .content {
+    header p {
+      font-size: 1.2rem;
+      margin-top: 0.2rem;
+      color: white;
+    }
+
+    nav {
+      background-color: #0d1b2a;
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 1rem 0;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: #feca57;
+    }
+
+    main {
       padding: 2rem;
-      max-width: 900px;
-      margin: 0 auto;
+      max-width: 1000px;
+      margin: auto;
     }
-    .article {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    .articles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: white;
       padding: 1.5rem;
-      margin-bottom: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease;
     }
-    .article h3 {
+    .card:hover {
+      transform: translateY(-4px);
+    }
+    .card h3 {
       margin-top: 0;
+      color: #0d1b2a;
     }
+    .card p {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
     footer {
       text-align: center;
-      padding: 1rem;
+      padding: 1.5rem;
       background: #0d1b2a;
       color: white;
-      margin-top: 2rem;
+      margin-top: 3rem;
+    }
+
+    @media (max-width: 768px) {
+      .articles {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Gridiyans Technology</h1>
+    <img src="logo.png" alt="Gridiyans Logo" />
+    <h1>Gridiyans.com</h1>
+    <p>Future Technology And Right Information</p>
   </header>
 
-  <section class="hero">
-    <h2>Innovating the Future</h2>
-    <p>Gridiyans adalah perusahaan teknologi yang berfokus pada solusi digital masa depan.</p>
-  </section>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="privacy-policy.html">Privacy Policy</a>
+  </nav>
 
-  <section class="content">
-    <div class="article">
-      <h3>🔍 AI Akan Mengubah Dunia Developer</h3>
-      <p>Kemajuan AI seperti ChatGPT dan Copilot mempercepat pengembangan software dan meningkatkan efisiensi developer.</p>
+  <main>
+    <h2>Artikel Teknologi Terkini</h2>
+    <div class="articles">
+      <div class="card">
+        <h3>5 Tren Teknologi 2025</h3>
+        <p>Kecerdasan buatan, komputasi awan, dan Internet of Things (IoT) akan semakin mendominasi dunia teknologi di tahun ini.</p>
+      </div>
+      <div class="card">
+        <h3>Keamanan Data di Era Digital</h3>
+        <p>Perusahaan teknologi terus memperkuat sistem keamanan siber demi menjaga privasi dan data pengguna.</p>
+      </div>
+      <div class="card">
+        <h3>Android 15 Siap Meluncur</h3>
+        <p>Google akan merilis Android 15 dengan fitur efisiensi baterai dan AI yang lebih canggih untuk pengguna Android global.</p>
+      </div>
+      <div class="card">
+        <h3>Perkembangan Aplikasi Mobile</h3>
+        <p>Dari super app hingga mini app, dunia pengembangan aplikasi mobile terus mengalami inovasi luar biasa.</p>
+      </div>
     </div>
-    <div class="article">
-      <h3>📱 5G Mendorong Inovasi Aplikasi Mobile</h3>
-      <p>Dengan kecepatan dan latensi rendah, 5G membuka peluang besar untuk aplikasi real-time seperti AR, IoT, dan gaming.</p>
-    </div>
-    <div class="article">
-      <h3>🌐 Web 3.0 dan Masa Depan Internet</h3>
-      <p>Desentralisasi data dan transparansi menjadi fondasi baru dalam membangun aplikasi berbasis blockchain.</p>
-    </div>
-  </section>
+  </main>
 
   <footer>
     &copy; 2025 Gridiyans Technology. All rights reserved.
