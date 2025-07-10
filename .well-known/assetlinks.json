@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.gridiyansapps.quran_al_barkah",
+      "sha256_cert_fingerprints": [
+        "F9:AF:2F:6B:6C:C4:56:69:3B:81:FA:57:C3:0D:E7:75:28:48:62:90:8F:A7:2E:F7:7E:8E:F7:36:88:FC:97:6E"
+      ]
+    }
+  }
+]
