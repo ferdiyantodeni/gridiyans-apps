@@ -251,9 +251,10 @@
             cursor: pointer;
             font-weight: bold;
             width: 100%;
+            margin-bottom: 15px;
         }
 
-        /* Styling Tambahan untuk Statistik Result */
+        /* Styling Statistik */
         .stats-container {
             display: flex;
             justify-content: center;
@@ -281,6 +282,38 @@
             color: #991B1B;
             border: 2px solid #F87171;
         }
+
+        /* Styling Tombol Navigasi Eksternal */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-link {
+            background: #F9FAFB;
+            color: var(--text);
+            border: 2px solid #E5E7EB;
+            padding: 12px 20px;
+            font-size: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.2s;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-link:hover {
+            background: #E5E7EB;
+            border-color: #D1D5DB;
+            transform: translateY(-2px);
+        }
         
         .copyright {
             margin-top: 30px;
@@ -297,7 +330,7 @@
             .question {
                 font-size: 18px;
             }
-            .stats-container {
+            .stats-container, .nav-buttons {
                 flex-direction: column;
                 gap: 10px;
             }
@@ -335,6 +368,12 @@
                 <button class="cat-btn" onclick="startGame('otomotif')">🚗 Otomotif & Kendaraan</button>
                 <button class="cat-btn" onclick="startGame('kuliner')">🍜 Kuliner Nusantara</button>
             </div>
+
+            <!-- Tombol Link Eksternal -->
+            <div class="nav-buttons">
+                <a href="https://gridiyans.my.id/" class="btn-link">🏠 Home</a>
+                <a href="https://gridiyans.my.id/ice_breaking.html" class="btn-link">🎮 Menu Game</a>
+            </div>
         </div>
 
         <!-- Layar Game -->
@@ -368,36 +407,28 @@
             <div class="score" id="final-score">0</div>
             <div class="badge" id="badge-text">Luar Biasa!</div>
             
-            <button class="btn-restart" onclick="location.reload()">Kembali ke Menu Utama</button>
+            <button class="btn-restart" onclick="location.reload()">🔄 Main Lagi</button>
+            
+            <!-- Tombol Link Eksternal -->
+            <div class="nav-buttons">
+                <a href="https://gridiyans.my.id/" class="btn-link">🏠 Home</a>
+                <a href="https://gridiyans.my.id/ice_breaking.html" class="btn-link">🎮 Menu Game</a>
+            </div>
         </div>
         
-    <!-- NAVIGASI LINK & FOOTER / COPYRIGHT -->
-    <footer class="w-full text-center py-4 space-y-3 mt-4">
-        <!-- Tombol Navigasi Home & Menu Game -->
-        <div class="flex justify-center gap-3">
-            <a href="https://gridiyans.my.id/" class="px-4 py-2 bg-white/10 hover:bg-white/25 border border-white/20 text-purple-200 text-xs md:text-sm font-semibold rounded-xl backdrop-blur-md transition">
-                🏠 Home
-            </a>
-            <a href="https://gridiyans.my.id/ice_breaking.html" class="px-4 py-2 bg-white/10 hover:bg-white/25 border border-white/20 text-purple-200 text-xs md:text-sm font-semibold rounded-xl backdrop-blur-md transition">
-                🎮 Menu Game
-            </a>
+        <!-- Copyright Section -->
+        <div class="copyright">
+            Game Ice Breaking Developed by Ferdiyanto Deni Sanjaya &copy; 2026 Ver 5.0
         </div>
-        
-        <!-- Copyright -->
-        <p class="text-purple-300/70 text-xs md:text-sm">
-            Game Ice Breaking Develop By Ferdiyanto Deni Sanjaya &copy; 2026
-        </p>
-    </footer>
     </div>
 
     <script>
-        // Database 10 Pertanyaan per Kategori
         const quizData = {
             logika: {
                 title: "🧠 Logika Mengecoh",
                 questions: [
                     { q: "Anda ikut lomba lari. Jika Anda menyalip orang di posisi ke-2, sekarang Anda di posisi berapa?", options: ["Pertama", "Kedua", "Ketiga", "Keempat"], answer: 1 },
-                    { q: "Berapa banyak bulan dalam satu tahun yang memiliki 28 hari?", options: ["1 Bulan", "6 Bulan", "12 Bulan", "Tidak Ada"], answer: 2 },
+                    { q: "Berapa banyak bulan dalam satu tahun yang memiliki 28 hari?", options: ["1 Bulan", "6 Bulan", "12 Bulan", "Semua Bulan"], answer: 3 },
                     { q: "Anda masuk ke ruangan gelap membawa 1 korek api. Di sana ada lampu minyak, lilin, dan obor. Mana yang dinyalakan dulu?", options: ["Lampu minyak", "Lilin", "Obor", "Korek Api"], answer: 3 },
                     { q: "Kata apa yang selalu dieja 'salah' di dalam Kamus Besar Bahasa Indonesia?", options: ["Benar", "Keliru", "Typo", "Salah"], answer: 3 },
                     { q: "Jika 5 mesin butuh 5 menit untuk buat 5 baju, berapa waktu yang dibutuhkan 100 mesin untuk membuat 100 baju?", options: ["100 Menit", "50 Menit", "5 Menit", "1 Menit"], answer: 2 },
@@ -489,7 +520,6 @@
         let currentQuestions = [];
         let currentQuestionIndex = 0;
         
-        // Variabel Statistik
         let score = 0;
         let countCorrect = 0;
         let countWrong = 0;
@@ -510,7 +540,6 @@
         const nextBtn = document.getElementById('next-btn');
 
         function startGame(categoryKey) {
-            // Cek mode yang dipilih (Otomatis atau Manual)
             const radios = document.getElementsByName('mode');
             for (let radio of radios) {
                 if (radio.checked) {
@@ -521,8 +550,6 @@
 
             currentCategory = categoryKey;
             currentQuestions = [...quizData[categoryKey].questions];
-            
-            // Acak urutan 10 soal
             currentQuestions.sort(() => Math.random() - 0.5);
             
             activeCategoryText.innerText = quizData[categoryKey].title;
@@ -592,7 +619,6 @@
 
             if (selectedIndex === currentQ.answer) {
                 btnElement.classList.add('correct');
-                // Kalkulasi poin berdasarkan sisa waktu (Maksimal ~100 Poin)
                 let timeBonus = Math.ceil(timeLeft * 10);
                 score += timeBonus;
                 countCorrect++;
@@ -610,7 +636,7 @@
             isAnswering = true;
             disableAllButtons();
             
-            countWrong++; // Tidak menjawab / Waktu habis dihitung salah
+            countWrong++; 
             
             const currentQ = currentQuestions[currentQuestionIndex];
             const buttons = optionsContainer.children;
@@ -645,13 +671,12 @@
             gameScreen.style.display = 'none';
             resultScreen.style.display = 'block';
             
-            // Masukkan data ke HTML
             document.getElementById('final-score').innerText = score;
             document.getElementById('correct-count').innerText = countCorrect;
             document.getElementById('wrong-count').innerText = countWrong;
             
             let badge = "";
-            const maxScore = currentQuestions.length * 100; // Total potensial maksimal ~1000 Poin
+            const maxScore = currentQuestions.length * 100;
             
             if (score >= maxScore * 0.8) badge = "🏆 Sempurna! Sangat Tepat dan Cepat!";
             else if (score >= maxScore * 0.5) badge = "🔥 Mantap! Refleks yang Luar Biasa!";
