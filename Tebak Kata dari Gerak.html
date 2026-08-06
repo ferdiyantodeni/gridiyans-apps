@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Breaking - Tebak Kata & Gerak</title>
+    <!-- Tailwind CSS untuk styling modern -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 min-h-screen text-white flex flex-col items-center justify-between p-4">
+
+    <!-- CONTAINER UTAMA -->
+    <div class="max-w-xl w-full bg-white/10 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-2xl border border-white/25 my-auto">
+        
+        <!-- HEADER -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-1 tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-pink-500">
+                🎭 TEBAK GAYA
+            </h1>
+            <p class="text-purple-200 text-sm md:text-base">
+                Peraga memberi isyarat gerakan, penjawab menghadap layar!
+            </p>
+        </div>
+
+        <!-- HALAMAN 1: PILIH KATEGORI & ATURAN MAIN -->
+        <div id="setup-screen" class="space-y-6">
+            
+            <!-- Kotak Aturan Main -->
+            <div class="bg-purple-950/60 border border-pink-500/30 rounded-2xl p-4 text-left text-sm space-y-2">
+                <h3 class="font-bold text-pink-400 flex items-center gap-1">
+                    📜 Aturan Main:
+                </h3>
+                <ul class="list-disc list-inside space-y-1 text-purple-200">
+                    <li>Penjawab membelakangi layar & menghadap ke penonton/peraga.</li>
+                    <li>Peraga melihat layar di atas dan memperagakan kata tanpa bersuara.</li>
+                    <li><strong class="text-yellow-300">Dilarang Berbicara:</strong> Jika peraga berbicara, kata akan langsung di-skip (lewat)!</li>
+                    <li>Tekan <span class="bg-emerald-600 px-1.5 py-0.5 rounded text-xs font-bold">Benar</span> jika penjawab menebak dengan tepat, atau <span class="bg-amber-600 px-1.5 py-0.5 rounded text-xs font-bold">Lewat</span> untuk melewati kata.</li>
+                </ul>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-2 text-purple-200">Pilih Kategori Kata:</label>
+                <select id="category-select" class="w-full bg-purple-950/60 border border-purple-400/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-pink-500">
+                    <option value="profesi">💼 Profesi & Pekerjaan</option>
+                    <option value="hewan">🦁 Hewan Unik</option>
+                    <option value="benda">📦 Benda Sehari-hari</option>
+                    <option value="aktivitas">🏃 Aktivitas / Hobi</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold mb-2 text-purple-200">Durasi Per Ronde (Detik):</label>
+                <input type="number" id="timer-duration" value="60" min="15" max="180" class="w-full bg-purple-950/60 border border-purple-400/50 rounded-xl px-4 py-3 text-center text-white font-bold focus:outline-none focus:ring-2 focus:ring-pink-500">
+            </div>
+
+            <button onclick="startGame()" class="w-full py-4 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-lg rounded-xl shadow-lg transform transition active:scale-95 cursor-pointer">
+                Mulai Game 🚀
+            </button>
+        </div>
+
+        <!-- HALAMAN 2: ARENA PERMAINAN (LAYOUT KATA DI ATAS) -->
+        <div id="game-screen" class="hidden space-y-6">
+            
+            <!-- 1. KATA UTAMA (DIPINDAHKAN KE BAGIAN ATAS & UKURAN LEBIH BESAR) -->
+            <div class="bg-gradient-to-b from-purple-800 to-indigo-950 border-4 border-pink-500/70 rounded-3xl p-6 md:p-8 min-h-[160px] flex flex-col items-center justify-center shadow-2xl relative overflow-hidden text-center">
+                <span class="text-xs uppercase tracking-widest text-pink-300 font-semibold mb-1">KATA UNTUK DIPERAGAKAN</span>
+                <h2 id="word-display" class="text-3xl md:text-5xl font-extrabold tracking-wider uppercase text-yellow-300 drop-shadow-lg animate-pulse">
+                    SIAP?
+                </h2>
+            </div>
+
+            <!-- 2. INFO BAR (TIMER & SKOR) -->
+            <div class="flex justify-between items-center bg-purple-950/40 p-4 rounded-2xl border border-white/10">
+                <div>
+                    <span class="text-xs text-purple-300 block">WAKTU</span>
+                    <span id="timer-display" class="text-3xl font-extrabold text-yellow-400">60</span>
+                </div>
+                <div>
+                    <span class="text-xs text-purple-300 block">SKOR</span>
+                    <span id="score-display" class="text-3xl font-extrabold text-green-400">0</span>
+                </div>
+            </div>
+
+            <!-- 3. TOMBOL KONTROL PERMAINAN -->
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="handleSkip()" class="py-4 bg-amber-600 hover:bg-amber-700 font-bold text-lg rounded-xl shadow-md transition active:scale-95 cursor-pointer">
+                    ⏭️ Lewat
+                </button>
+                <button onclick="handleCorrect()" class="py-4 bg-emerald-600 hover:bg-emerald-700 font-bold text-lg rounded-xl shadow-md transition active:scale-95 cursor-pointer">
+                    ✅ Benar (+1)
+                </button>
+            </div>
+        </div>
+
+        <!-- HALAMAN 3: SELESAI / GAME OVER -->
+        <div id="result-screen" class="hidden space-y-6 text-center">
+            <h2 class="text-2xl font-bold text-pink-400">Waktu Habis! 🎉</h2>
+            <p class="text-purple-200">Total Kata Berhasil Ditebak:</p>
+            <div class="text-6xl font-black text-yellow-400 my-4" id="final-score">0</div>
+            
+            <button onclick="resetGame()" class="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 font-bold text-lg rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+                Main Lagi 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <!-- NAVIGASI LINK & FOOTER / COPYRIGHT -->
+    <footer class="w-full text-center py-4 space-y-3 mt-4">
+        <!-- Tombol Navigasi Home & Menu Game -->
+        <div class="flex justify-center gap-3">
+            <a href="https://gridiyans.my.id/" class="px-4 py-2 bg-white/10 hover:bg-white/25 border border-white/20 text-purple-200 text-xs md:text-sm font-semibold rounded-xl backdrop-blur-md transition">
+                🏠 Home
+            </a>
+            <a href="https://gridiyans.my.id/game_ice_breaking.php" class="px-4 py-2 bg-white/10 hover:bg-white/25 border border-white/20 text-purple-200 text-xs md:text-sm font-semibold rounded-xl backdrop-blur-md transition">
+                🎮 Menu Game
+            </a>
+        </div>
+        
+        <!-- Copyright -->
+        <p class="text-purple-300/70 text-xs md:text-sm">
+            Game Ice Breaking Develop By Ferdiyanto Deni Sanjaya &copy; 2026
+        </p>
+    </footer>
+
+    <!-- SCRIPT LOGIKA GAME & VOICE DETECTION -->
+    <script>
+        const wordDatabase = {
+            profesi: ["Dokter Bedah", "Koki Restoran", "Astronot", "Pemadam Kebakaran", "Polisi Lalu Lintas", "Guru Kelas", "Tukang Cukur", "Pemain Sepak Bola", "Sopir Bus", "Nelayan"],
+            hewan: ["Kangguru", "Gajah", "Pinguin", "Monyet", "Kucing", "Kepiting", "Ular", "Kura-kura", "Kelelawar", "Jerapah"],
+            benda: ["Setrika", "Gunting", "Kacamata", "Helm", "Payung", "Sikat Gigi", "Gitar", "Kompor", "Kamera", "Sepatu Roda"],
+            aktivitas: ["Memancing", "Mencuci Piring", "Main Game", "Menyapu", "Memotret", "Berenang", "Memasak", "Yoga", "Menulis", "Mengepel"]
+        };
+
+        let currentWords = [];
+        let score = 0;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let recognition = null;
+        let isGameActive = false;
+
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const wordDisplay = document.getElementById('word-display');
+        const timerDisplay = document.getElementById('timer-display');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScore = document.getElementById('final-score');
+        const timerDurationInput = document.getElementById('timer-duration');
+        const categorySelect = document.getElementById('category-select');
+
+        // Inisialisasi Speech Recognition untuk mendeteksi suara peraga
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = false;
+                recognition.lang = 'id-ID';
+
+                recognition.onresult = function(event) {
+                    if (!isGameActive) return;
+                    // Jika peraga terdeteksi berbicara, otomatis skip kata
+                    handleSkip();
+                };
+
+                recognition.onerror = function(event) {
+                    console.log("Speech recognition info: ", event.error);
+                };
+
+                recognition.onend = function() {
+                    if (isGameActive && recognition) {
+                        try { recognition.start(); } catch(e) {}
+                    }
+                };
+            }
+        }
+
+        initSpeechRecognition();
+
+        function startGame() {
+            const duration = parseInt(timerDurationInput.value) || 60;
+            const category = categorySelect.value;
+            
+            currentWords = [...wordDatabase[category]].sort(() => Math.random() - 0.5);
+            
+            score = 0;
+            timeLeft = duration;
+            isGameActive = true;
+            
+            scoreDisplay.textContent = score;
+            timerDisplay.textContent = timeLeft;
+
+            setupScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            nextWord();
+
+            if (recognition) {
+                try { recognition.start(); } catch(e) {}
+            }
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function nextWord() {
+            if (currentWords.length === 0) {
+                const category = categorySelect.value;
+                currentWords = [...wordDatabase[category]].sort(() => Math.random() - 0.5);
+            }
+            const word = currentWords.pop();
+            wordDisplay.textContent = word;
+        }
+
+        function handleCorrect() {
+            score++;
+            scoreDisplay.textContent = score;
+            nextWord();
+        }
+
+        function handleSkip() {
+            nextWord();
+        }
+
+        function endGame() {
+            isGameActive = false;
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+            }
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScore.textContent = score;
+        }
+
+        function resetGame() {
+            resultScreen.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

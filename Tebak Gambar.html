@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kuis Ice Breaking - Tebak Gambar 5x5</title>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --secondary: #10B981;
+      --danger: #EF4444;
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --text: #F8FAFC;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .container { width: 100%; max-width: 700px; background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .badge { background: #334155; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #38BDF8; }
+    .score-badge { background: #059669; color: white; padding: 6px 14px; border-radius: 20px; font-weight: bold; }
+    
+    /* Grid Kategori di Halaman Depan */
+    .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .cat-card { background: #334155; border: 2px solid #475569; padding: 18px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+    .cat-card:hover { border-color: #38BDF8; background: #475569; transform: translateY(-2px); }
+    .cat-card h3 { font-size: 1.1rem; color: #F8FAFC; margin-bottom: 6px; }
+    .cat-card p { font-size: 0.85rem; color: #94A3B8; }
+
+    /* Container Gambar & 5x5 Grid Mask */
+    .image-wrapper { position: relative; width: 100%; height: 380px; border-radius: 12px; overflow: hidden; margin-bottom: 20px; border: 3px solid #334155; background: #0f172a; }
+    .main-img { width: 100%; height: 100%; object-fit: contain; display: block; background: #0f172a; }
+    
+    /* 5x5 GRID OVERLAY */
+    .grid-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); gap: 2px; }
+    
+    /* Styling Tile Normal & Center Tile Highlight */
+    .tile { background: #475569; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; font-size: 1rem; color: #F8FAFC; cursor: pointer; transition: all 0.3s ease; user-select: none; }
+    .tile:hover { background: #64748B; }
+    
+    /* Highlight khusus 9 Kotak Tengah */
+    .tile.center-tile { background: #2563EB; color: white; }
+    .tile.center-tile:hover { background: #1D4ED8; }
+
+    .tile .sub-text { font-size: 0.6rem; font-weight: normal; opacity: 0.85; margin-top: 1px; }
+    .tile.open { opacity: 0; visibility: hidden; }
+
+    .info-bar { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 0.95rem; font-weight: 600; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .btn-opt { background: #334155; color: white; border: 2px solid transparent; padding: 14px; border-radius: 10px; font-size: 0.95rem; cursor: pointer; font-weight: 600; transition: 0.2s; }
+    .btn-opt:hover { background: #475569; border-color: #38BDF8; }
+    .btn-opt.correct { background: var(--secondary) !important; border-color: white; color: white; }
+    .btn-opt.wrong { background: var(--danger) !important; opacity: 0.6; color: white; }
+
+    .btn-action { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .btn-action:hover { opacity: 0.9; }
+    .hidden { display: none !important; }
+
+    /* Footer Copyright Style */
+    .footer { margin-top: 20px; text-align: center; font-size: 0.85rem; color: #64748B; font-weight: 500; }
+  </style>
+</head>
+<body>
+
+<!-- SCREEN 1: PILIH KATEGORI -->
+<div class="container" id="category-screen">
+  <h2 style="text-align: center; margin-bottom: 8px;">🎮 Kuis Tebak Gambar (Grid 5x5)</h2>
+  <p style="text-align: center; color: #94A3B8; font-size: 0.9rem; margin-bottom: 6px;">Pilih kategori di bawah untuk memulai (10 Soal per Kategori):</p>
+  <p style="text-align: center; color: #38BDF8; font-size: 0.8rem; font-weight: 600;">💡 *9 Kotak Tengah = Pengurangan 25% (-25 Poin) | 16 Kotak Pinggir = Pengurangan 10% (-10 Poin)*</p>
+  
+  <div class="cat-grid" id="category-list"></div>
+</div>
+
+<!-- SCREEN 2: GAMEPLAY KUIS -->
+<div class="container hidden" id="quiz-screen">
+  <div class="header">
+    <span class="badge" id="cat-badge">Kategori</span>
+    <span class="score-badge">Total Poin: <span id="total-score">0</span></span>
+  </div>
+
+  <div class="image-wrapper">
+    <img id="quiz-img" class="main-img" src="" alt="Soal Gambar" />
+    <div class="grid-overlay" id="grid-mask">
+      <!-- 25 Petak (5x5) di-generate via JavaScript -->
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <span>Soal: <span id="q-num">1</span>/10</span>
+    <span>Nilai Soal Ini: <strong id="potential-score" style="color: #FACC15;">100</strong> Poin</span>
+  </div>
+
+  <div class="options-grid" id="options-container"></div>
+  <button id="next-btn" class="btn-action hidden" onclick="nextQuestion()">Soal Berikutnya ➔</button>
+</div>
+
+<!-- SCREEN 3: HASIL AKHIR -->
+<div class="container hidden" id="result-screen" style="text-align: center;">
+  <h2 style="font-size: 2rem; margin-bottom: 10px;">🎉 Kuis Selesai! 🎉</h2>
+  <p style="color: #94A3B8; margin-bottom: 20px;" id="result-category-text">Kategori</p>
+  <div style="background: #334155; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+    <p style="font-size: 1.1rem;">Skor Akhir Anda:</p>
+    <p style="font-size: 3rem; font-weight: bold; color: #38BDF8;" id="final-score">0</p>
+  </div>
+  <button class="btn-action" onclick="backToCategories()">Kembali ke Pilih Kategori</button>
+</div>
+
+<!-- FOOTER COPYRIGHT -->
+<footer class="footer">
+  Game Ice Breaking developed by Ferdiyanto Deni Sanjaya &copy; 2026
+</footer>
+
+<script>
+  // BANK SOAL: 6 Kategori x 10 Soal
+  const categoryData = {
+    "landmark_id": {
+      title: "Landmark Indonesia",
+      desc: "Monumen & Wisata Ikonik Indonesia",
+      questions: [
+        { wikiPage: "Monumen_Nasional", opts: ["Monumen Nasional", "Tugu Jogja", "Tugu Pahlawan", "Monumen Pancasila"], ans: "Monumen Nasional" },
+        { wikiPage: "Borobudur", opts: ["Candi Prambanan", "Candi Borobudur", "Tanah Lot", "Candi Mendut"], ans: "Candi Borobudur" },
+        { wikiPage: "Prambanan", opts: ["Candi Prambanan", "Candi Kalasan", "Candi Sewu", "Candi Dieng"], ans: "Candi Prambanan" },
+        { wikiPage: "Tanah_Lot", opts: ["Uluwatu", "Tanah Lot", "Kuta Bali", "Sanur"], ans: "Tanah Lot" },
+        { wikiPage: "Mount_Bromo", opts: ["Gunung Bromo", "Gunung Semeru", "Gunung Rinjani", "Gunung Merapi"], ans: "Gunung Bromo" },
+        { wikiPage: "Jam_Gadang", opts: ["Jam Gadang", "Tugu Khatulistiwa", "Menara Kudus", "Gedung Sate"], ans: "Jam Gadang" },
+        { wikiPage: "Gedung_Sate", opts: ["Gedung Sate", "Lawang Sewu", "Museum Bank Indonesia", "Istana Merdeka"], ans: "Gedung Sate" },
+        { wikiPage: "Lawang_Sewu", opts: ["Lawang Sewu", "Benteng Vredeburg", "Gedung Sate", "Kota Tua Jakarta"], ans: "Lawang Sewu" },
+        { wikiPage: "Suramadu_Bridge", opts: ["Jembatan Suramadu", "Jembatan Ampera", "Jembatan Barelang", "Jembatan Pasupati"], ans: "Jembatan Suramadu" },
+        { wikiPage: "Ampera_Bridge", opts: ["Jembatan Ampera", "Jembatan Suramadu", "Jembatan Youtefa", "Jembatan Mahakam"], ans: "Jembatan Ampera" }
+      ]
+    },
+    "landmark_world": {
+      title: "Landmark Dunia",
+      desc: "Keajaiban Dunia & Bangunan Populer",
+      questions: [
+        { wikiPage: "Eiffel_Tower", opts: ["Menara Eiffel", "Tokyo Tower", "Big Ben", "Burj Khalifa"], ans: "Menara Eiffel" },
+        { wikiPage: "Colosseum", opts: ["Colosseum Roma", "Piramida Giza", "Taj Mahal", "Machu Picchu"], ans: "Colosseum Roma" },
+        { wikiPage: "Taj_Mahal", opts: ["Taj Mahal", "Candi Borobudur", "Masjid Sheikh Zayed", "Angkor Wat"], ans: "Taj Mahal" },
+        { wikiPage: "Great_Pyramid_of_Giza", opts: ["Piramida Giza", "Sphinx", "Petra", "Chichen Itza"], ans: "Piramida Giza" },
+        { wikiPage: "Statue_of_Liberty", opts: ["Patung Liberty", "Christ the Redeemer", "Merlion", "Big Ben"], ans: "Patung Liberty" },
+        { wikiPage: "Big_Ben", opts: ["Big Ben", "Menara Pisa", "Tower Bridge", "Empire State"], ans: "Big Ben" },
+        { wikiPage: "Leaning_Tower_of_Pisa", opts: ["Menara Pisa", "Menara Eiffel", "Burj Khalifa", "Tokyo Skytree"], ans: "Menara Pisa" },
+        { wikiPage: "Sydney_Opera_House", opts: ["Sydney Opera House", "Lotus Temple", "Burj Al Arab", "Guggenheim"], ans: "Sydney Opera House" },
+        { wikiPage: "Burj_Khalifa", opts: ["Burj Khalifa", "Petronas Tower", "Taipei 101", "Shanghai Tower"], ans: "Burj Khalifa" },
+        { wikiPage: "Great_Wall_of_China", opts: ["Tembok Besar China", "Machu Picchu", "Petra", "Toko-ri"], ans: "Tembok Besar China" }
+      ]
+    },
+    "kuliner": {
+      title: "Kuliner Khas",
+      desc: "Makanan Tradisional & Dunia",
+      questions: [
+        { wikiPage: "Nasi_goreng", opts: ["Nasi Goreng", "Mie Goreng", "Kwetiau", "Nasi Uduk"], ans: "Nasi Goreng" },
+        { wikiPage: "Rendang", opts: ["Gulai Kambing", "Rendang Sapi", "Semur Daging", "Dendeng Balado"], ans: "Rendang Sapi" },
+        { wikiPage: "Satay", opts: ["Sate Ayam", "Gulai", "Soto", "Bakso"], ans: "Sate Ayam" },
+        { wikiPage: "Soto", opts: ["Soto Ayam", "Rawon", "Bakso", "Gado-Gado"], ans: "Soto Ayam" },
+        { wikiPage: "Gado-gado", opts: ["Gado-Gado", "Pecel", "Ketoprak", "Karedok"], ans: "Gado-Gado" },
+        { wikiPage: "Bakso", opts: ["Bakso", "Mie Ayam", "Pempek", "Batagor"], ans: "Bakso" },
+        { wikiPage: "Pempek", opts: ["Pempek", "Otak-Otak", "Siomay", "Batagor"], ans: "Pempek" },
+        { wikiPage: "Pizza", opts: ["Pizza Italian", "Burger", "Lasagna", "Calzone"], ans: "Pizza Italian" },
+        { wikiPage: "Sushi", opts: ["Sushi", "Sashimi", "Ramen", "Takoyaki"], ans: "Sushi" },
+        { wikiPage: "Hamburger", opts: ["Burger", "Hotdog", "Sandwich", "Kebab"], ans: "Burger" }
+      ]
+    },
+    "tokoh": {
+      title: "Tokoh & Penemu",
+      desc: "Ilmuwan & Tokoh Sejarah Dunia",
+      questions: [
+        { wikiPage: "Albert_Einstein", opts: ["Albert Einstein", "Isaac Newton", "Nikola Tesla", "Thomas Edison"], ans: "Albert Einstein" },
+        { wikiPage: "Isaac_Newton", opts: ["Isaac Newton", "Galileo Galilei", "Charles Darwin", "Stephen Hawking"], ans: "Isaac Newton" },
+        { wikiPage: "Thomas_Edison", opts: ["Thomas Edison", "Alexander Graham Bell", "Nikola Tesla", "Wright Brothers"], ans: "Thomas Edison" },
+        { wikiPage: "Nikola_Tesla", opts: ["Nikola Tesla", "Albert Einstein", "Michael Faraday", "James Watt"], ans: "Nikola Tesla" },
+        { wikiPage: "Sukarno", opts: ["Ir. Soekarno", "Mohammad Hatta", "Jenderal Soedirman", "Ki Hajar Dewantara"], ans: "Ir. Soekarno" },
+        { wikiPage: "Mohammad_Hatta", opts: ["Mohammad Hatta", "Ir. Soekarno", "Sutan Sjahrir", "Tan Malaka"], ans: "Mohammad Hatta" },
+        { wikiPage: "Marie_Curie", opts: ["Marie Curie", "Ada Lovelace", "Rosalind Franklin", "Florence Nightingale"], ans: "Marie Curie" },
+        { wikiPage: "Steve_Jobs", opts: ["Steve Jobs", "Bill Gates", "Mark Zuckerberg", "Elon Musk"], ans: "Steve Jobs" },
+        { wikiPage: "Elon_Musk", opts: ["Elon Musk", "Jeff Bezos", "Steve Jobs", "Larry Page"], ans: "Elon Musk" },
+        { wikiPage: "Leonardo_da_Vinci", opts: ["Leonardo da Vinci", "Michelangelo", "Pablo Picasso", "Vincent van Gogh"], ans: "Leonardo da Vinci" }
+      ]
+    },
+    "fauna": {
+      title: "Hewan & Spesies",
+      desc: "Fauna Endemik & Satwa Dunia",
+      questions: [
+        { wikiPage: "Komodo_dragon", opts: ["Komodo", "Biawak", "Iguana", "Anoa"], ans: "Komodo" },
+        { wikiPage: "Panda", opts: ["Panda", "Koala", "Beruang Kutub", "Beruang Madu"], ans: "Panda" },
+        { wikiPage: "Kangaroo", opts: ["Kanguru", "Wallaby", "Koala", "Wombat"], ans: "Kanguru" },
+        { wikiPage: "Orangutan", opts: ["Orangutan", "Simpanse", "Gorila", "Gibbon"], ans: "Orangutan" },
+        { wikiPage: "Tiger", opts: ["Harimau", "Singa", "Macan Tutul", "Cheetah"], ans: "Harimau" },
+        { wikiPage: "Lion", opts: ["Singa", "Harimau", "Hyena", "Jaguar"], ans: "Singa" },
+        { wikiPage: "Elephant", opts: ["Gajah", "Badak", "Kuda Nil", "Jerapah"], ans: "Gajah" },
+        { wikiPage: "Rhinoceros", opts: ["Badak Jawa", "Kuda Nil", "Tapir", "Gajah"], ans: "Badak Jawa" },
+        { wikiPage: "Penguin", opts: ["Penguin", "Burung Kormoran", "Pelikan", "Albatros"], ans: "Penguin" },
+        { wikiPage: "Koala", opts: ["Koala", "Wombat", "Kuskus", "Kukang"], ans: "Koala" }
+      ]
+    },
+    "objek": {
+      title: "Objek & Pop Culture",
+      desc: "Gawai, Alat & Budaya Pop",
+      questions: [
+        { wikiPage: "Digital_single-lens_reflex_camera", opts: ["Kamera DSLR", "Kamera Polaroid", "Proyektor", "Mikroskop"], ans: "Kamera DSLR" },
+        { wikiPage: "Headphones", opts: ["Headphone", "Speaker Bluetooth", "Earphone", "Microphone"], ans: "Headphone" },
+        { wikiPage: "Bicycle", opts: ["Sepeda", "Sepeda Motor", "Skuter", "Becak"], ans: "Sepeda" },
+        { wikiPage: "Guitar", opts: ["Gitar Akustik", "Ukulele", "Bass", "Biola"], ans: "Gitar Akustik" },
+        { wikiPage: "Piano", opts: ["Piano", "Organ", "Keyboard", "Harpsichord"], ans: "Piano" },
+        { wikiPage: "Microscope", opts: ["Mikroskop", "Teleskop", "Kaca Pembesar", "Proyektor"], ans: "Mikroskop" },
+        { wikiPage: "Telescope", opts: ["Teleskop", "Mikroskop", "Teropong", "Kamera Binokular"], ans: "Teleskop" },
+        { wikiPage: "Mickey_Mouse", opts: ["Mickey Mouse", "Donald Duck", "Bugs Bunny", "SpongeBob"], ans: "Mickey Mouse" },
+        { wikiPage: "Pikachu", opts: ["Pikachu", "Charmander", "Squirtle", "Doraemon"], ans: "Pikachu" },
+        { wikiPage: "Rubik%27s_Cube", opts: ["Rubik's Cube", "Catur", "Tetris", "Puzzle Wood"], ans: "Rubik's Cube" }
+      ]
+    }
+  };
+
+  const centerTiles5x5 = [7, 8, 9, 12, 13, 14, 17, 18, 19];
+
+  let activeCategoryKey = "";
+  let currentQuestions = [];
+  let currentIdx = 0;
+  let totalScore = 0;
+  let potentialScore = 100;
+  let answered = false;
+
+  function initCategories() {
+    const catList = document.getElementById("category-list");
+    catList.innerHTML = "";
+    Object.keys(categoryData).forEach(key => {
+      const cat = categoryData[key];
+      const card = document.createElement("div");
+      card.className = "cat-card";
+      card.innerHTML = `<h3>${cat.title}</h3><p>${cat.desc}</p>`;
+      card.onclick = () => startQuiz(key);
+      catList.appendChild(card);
+    });
+  }
+
+  function startQuiz(catKey) {
+    activeCategoryKey = catKey;
+    currentQuestions = categoryData[catKey].questions;
+    currentIdx = 0;
+    totalScore = 0;
+    document.getElementById("total-score").innerText = "0";
+
+    document.getElementById("category-screen").classList.add("hidden");
+    document.getElementById("result-screen").classList.add("hidden");
+    document.getElementById("quiz-screen").classList.remove("hidden");
+
+    loadQuestion();
+  }
+
+  async function fetchWikiImage(pageTitle) {
+    try {
+      const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`);
+      const data = await res.json();
+      return data.originalimage ? data.originalimage.source : (data.thumbnail ? data.thumbnail.source : '');
+    } catch (e) {
+      return '';
+    }
+  }
+
+  async function loadQuestion() {
+    answered = false;
+    potentialScore = 100;
+    const q = currentQuestions[currentIdx];
+
+    document.getElementById("cat-badge").innerText = categoryData[activeCategoryKey].title;
+    document.getElementById("q-num").innerText = currentIdx + 1;
+    document.getElementById("potential-score").innerText = potentialScore;
+    document.getElementById("next-btn").classList.add("hidden");
+
+    const imgElement = document.getElementById("quiz-img");
+    imgElement.src = "";
+    const validImgUrl = await fetchWikiImage(q.wikiPage);
+    imgElement.src = validImgUrl;
+
+    const mask = document.getElementById("grid-mask");
+    mask.innerHTML = "";
+    for (let i = 1; i <= 25; i++) {
+      const tile = document.createElement("div");
+      const isCenter = centerTiles5x5.includes(i);
+      
+      tile.className = isCenter ? "tile center-tile" : "tile";
+      
+      const subText = isCenter ? "-25%" : "-10%";
+      tile.innerHTML = `<span>${i}</span><span class="sub-text">${subText}</span>`;
+      
+      tile.onclick = () => revealTile(tile, isCenter);
+      mask.appendChild(tile);
+    }
+
+    const optContainer = document.getElementById("options-container");
+    optContainer.innerHTML = "";
+    q.opts.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "btn-opt";
+      btn.innerText = opt;
+      btn.onclick = () => checkAnswer(opt, btn);
+      optContainer.appendChild(btn);
+    });
+  }
+
+  function revealTile(tile, isCenter) {
+    if (answered || tile.classList.contains("open")) return;
+    tile.classList.add("open");
+
+    const deduction = isCenter ? 25 : 10;
+    potentialScore = Math.max(0, potentialScore - deduction);
+    
+    document.getElementById("potential-score").innerText = potentialScore;
+  }
+
+  function checkAnswer(selected, btn) {
+    if (answered) return;
+    answered = true;
+
+    document.querySelectorAll(".tile").forEach(t => t.classList.add("open"));
+    const q = currentQuestions[currentIdx];
+    const buttons = document.querySelectorAll(".btn-opt");
+
+    if (selected === q.ans) {
+      btn.classList.add("correct");
+      totalScore += potentialScore;
+      document.getElementById("total-score").innerText = totalScore;
+    } else {
+      btn.classList.add("wrong");
+      buttons.forEach(b => {
+        if (b.innerText === q.ans) b.classList.add("correct");
+      });
+    }
+
+    document.getElementById("next-btn").classList.remove("hidden");
+  }
+
+  function nextQuestion() {
+    currentIdx++;
+    if (currentIdx < currentQuestions.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    document.getElementById("quiz-screen").classList.add("hidden");
+    document.getElementById("result-screen").classList.remove("hidden");
+    document.getElementById("result-category-text").innerText = `Kategori: ${categoryData[activeCategoryKey].title}`;
+    document.getElementById("final-score").innerText = totalScore;
+  }
+
+  function backToCategories() {
+    document.getElementById("result-screen").classList.add("hidden");
+    document.getElementById("quiz-screen").classList.add("hidden");
+    document.getElementById("category-screen").classList.remove("hidden");
+  }
+
+  initCategories();
+</script>
+</body>
+</html>

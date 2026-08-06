@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Ice Breaking & Game Seru</title>
+    <!-- Google Fonts & FontAwesome untuk ikon -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 750;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            margin-bottom: 40px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 25px 20px;
+            transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .game-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .game-card p {
+            font-size: 0.9rem;
+            color: #dcdcdc;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #ff758c;
+            background: linear-gradient(to right, #ff7eb3, #ff758c);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+            transition: opacity 0.2s;
+        }
+
+        .game-card:hover .btn {
+            opacity: 0.9;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #cfcfcf;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-gamepad"></i> Ice Breaking Portal</h1>
+            <p>Pilih game interaktif seru di bawah ini untuk mencairkan suasana!</p>
+        </header>
+
+        <div class="game-grid">
+            <!-- Game 1 -->
+            <a href="Tebak Kata dari Gerak.html" class="game-card">
+                <i class="fa-solid fa-person-running"></i>
+                <h3>Tebak Kata dari Gerak</h3>
+                <p>Uji kreativitas gerak tubuh untuk menebak kata rahasia.</p>
+                <span class="btn">Mainkan <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Game 2 -->
+            <a href="Game_interaktif.html" class="game-card">
+                <i class="fa-solid fa-dice"></i>
+                <h3>Game Interaktif</h3>
+                <p>Kumpulan aktivitas seru untuk mencairkan suasana kelas/tim.</p>
+                <span class="btn">Mainkan <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+
+            <!-- Game 3 -->
+            <a href="Tebak Gambar.html" class="game-card">
+                <i class="fa-solid fa-image"></i>
+                <h3>Tebak Gambar</h3>
+                <p>Tebak makna tersembunyi di balik potongan gambar unik.</p>
+                <span class="btn">Mainkan <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 <strong>gridiyans.my.id</strong>. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

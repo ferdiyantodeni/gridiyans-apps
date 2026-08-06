@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Kilat ala Ferdi</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg: #F3F4F6;
+            --text: #1F2937;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--white);
+            width: 100%;
+            max-width: 700px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        .settings-box {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .settings-box h3 {
+            font-size: 14px;
+            color: #4B5563;
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .radio-label input {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .cat-btn {
+            background: var(--white);
+            color: var(--text);
+            border: 2px solid var(--primary);
+            padding: 15px 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .cat-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        #game-screen, #result-screen {
+            display: none;
+        }
+
+        .category-title {
+            background: #EEF2FF;
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: #6B7280;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 15px;
+            background: #E5E7EB;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        .timer-warning {
+            background: var(--danger);
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #F9FAFB;
+            color: var(--text);
+            border: 2px solid #E5E7EB;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #EEF2FF;
+        }
+
+        .option-btn.correct {
+            background: var(--secondary) !important;
+            color: white !important;
+            border-color: var(--secondary) !important;
+        }
+
+        .option-btn.wrong {
+            background: var(--danger) !important;
+            color: white !important;
+            border-color: var(--danger) !important;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .next-btn {
+            background: var(--warning);
+            color: var(--white);
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 25px;
+            display: none;
+            width: 100%;
+        }
+
+        .next-btn:hover {
+            background: #D97706;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0 20px 0;
+        }
+
+        .badge {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: #FEF3C7;
+            color: #D97706;
+            display: inline-block;
+            margin-bottom: 25px;
+        }
+
+        .btn-restart {
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* Styling Tambahan untuk Statistik Result */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .stat-box.correct-box {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #34D399;
+        }
+
+        .stat-box.wrong-box {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #F87171;
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #E5E7EB;
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+
+        @media (max-width: 480px) {
+            .options-grid, .category-grid {
+                grid-template-columns: 1fr;
+            }
+            .question {
+                font-size: 18px;
+            }
+            .stats-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .stat-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Layar Mulai -->
+        <div id="start-screen">
+            <h1>⚡ Game Kilat ala Ferdi</h1>
+            <p>Waktu menjawab adalah <strong>10 detik</strong> per soal. Poin dihitung dari <strong>kecepatan menjawab</strong>!</p>
+            
+            <div class="settings-box">
+                <h3>Pengaturan Perpindahan Soal:</h3>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="mode" value="auto" checked> Otomatis (1.5 detik)
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="mode" value="manual"> Klik Manual
+                    </label>
+                </div>
+            </div>
+
+            <div class="category-grid">
+                <button class="cat-btn" onclick="startGame('logika')">🧠 Logika Mengecoh</button>
+                <button class="cat-btn" onclick="startGame('umum')">🌍 Pengetahuan Umum</button>
+                <button class="cat-btn" onclick="startGame('industri')">🏭 Operasional & Industri</button>
+                <button class="cat-btn" onclick="startGame('sistem')">💻 Teknologi & Sistem</button>
+                <button class="cat-btn" onclick="startGame('otomotif')">🚗 Otomotif & Kendaraan</button>
+                <button class="cat-btn" onclick="startGame('kuliner')">🍜 Kuliner Nusantara</button>
+            </div>
+        </div>
+
+        <!-- Layar Game -->
+        <div id="game-screen">
+            <div class="category-title" id="active-category">Kategori</div>
+            <span class="progress-text" id="progress-text">Soal 1 / 10</span>
+            <div class="timer-bar">
+                <div class="timer-fill" id="timer-fill"></div>
+            </div>
+            <div class="question" id="question-text">Memuat pertanyaan...</div>
+            <div class="options-grid" id="options-container">
+                <!-- Tombol pilihan -->
+            </div>
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Soal Berikutnya ➡️</button>
+        </div>
+
+        <!-- Layar Hasil -->
+        <div id="result-screen">
+            <h1>Sesi Selesai!</h1>
+            
+            <div class="stats-container">
+                <div class="stat-box correct-box">
+                    ✅ Benar: <span id="correct-count">0</span>
+                </div>
+                <div class="stat-box wrong-box">
+                    ❌ Salah: <span id="wrong-count">0</span>
+                </div>
+            </div>
+
+            <p>Total Poin Kecepatan:</p>
+            <div class="score" id="final-score">0</div>
+            <div class="badge" id="badge-text">Luar Biasa!</div>
+            
+            <button class="btn-restart" onclick="location.reload()">Kembali ke Menu Utama</button>
+        </div>
+        
+        <!-- Copyright Section -->
+        <div class="copyright">
+            Game Ice Breaking Developed by Ferdiyanto Deni Sanjaya &copy; 2026 Ver 5.0
+        </div>
+    </div>
+
+    <script>
+        // Database 10 Pertanyaan per Kategori
+        const quizData = {
+            logika: {
+                title: "🧠 Logika Mengecoh",
+                questions: [
+                    { q: "Anda ikut lomba lari. Jika Anda menyalip orang di posisi ke-2, sekarang Anda di posisi berapa?", options: ["Pertama", "Kedua", "Ketiga", "Keempat"], answer: 1 },
+                    { q: "Berapa banyak bulan dalam satu tahun yang memiliki 28 hari?", options: ["1 Bulan", "6 Bulan", "12 Bulan", "Tidak Ada"], answer: 2 },
+                    { q: "Anda masuk ke ruangan gelap membawa 1 korek api. Di sana ada lampu minyak, lilin, dan obor. Mana yang dinyalakan dulu?", options: ["Lampu minyak", "Lilin", "Obor", "Korek Api"], answer: 3 },
+                    { q: "Kata apa yang selalu dieja 'salah' di dalam Kamus Besar Bahasa Indonesia?", options: ["Benar", "Keliru", "Typo", "Salah"], answer: 3 },
+                    { q: "Jika 5 mesin butuh 5 menit untuk buat 5 baju, berapa waktu yang dibutuhkan 100 mesin untuk membuat 100 baju?", options: ["100 Menit", "50 Menit", "5 Menit", "1 Menit"], answer: 2 },
+                    { q: "Tikus kalau berjalan kakinya empat, kalau terbang kakinya ada berapa?", options: ["Dua", "Empat", "Enam", "Tikus tak bisa terbang"], answer: 3 },
+                    { q: "Benda apa yang justru lebih berguna ketika dia sudah pecah?", options: ["Kaca Jendela", "Balon", "Telur", "Piring"], answer: 2 },
+                    { q: "Siapa yang bisa berenang berjam-jam tapi rambutnya tidak pernah basah sama sekali?", options: ["Penyelam Profesional", "Orang Botak", "Ikan", "Atlet Renang"], answer: 1 },
+                    { q: "Saya ringan seperti bulu, tapi orang terkuat di dunia pun tidak bisa menahan saya lebih dari 5 menit. Siapakah saya?", options: ["Beban Hidup", "Napas", "Janji", "Kapas"], answer: 1 },
+                    { q: "Apa yang kalau dipegang terasa ada, tapi kalau dilihat (tanpa alat) tidak pernah terlihat oleh mata kita sendiri?", options: ["Angin", "Bayangan", "Telinga Sendiri", "Uang Gaib"], answer: 2 }
+                ]
+            },
+            umum: {
+                title: "🌍 Pengetahuan Umum",
+                questions: [
+                    { q: "Warna dari 'Black Box' (Kotak Hitam) pada pesawat terbang yang sebenarnya adalah...", options: ["Hitam Kelam", "Oranye Terang", "Merah Darah", "Putih Tulang"], answer: 1 },
+                    { q: "Huruf keempat dari kata 'ABJAD' adalah?", options: ["D", "A", "J", "B"], answer: 1 },
+                    { q: "1 Kilogram Besi dan 1 Kilogram Kapas, manakah yang lebih berat?", options: ["Besi", "Kapas", "Sama Beratnya", "Tidak Bisa Ditimbang"], answer: 2 },
+                    { q: "Hewan apa yang saat masih bayi bernapas menggunakan insang, namun saat dewasa menggunakan paru-paru?", options: ["Kura-kura", "Katak", "Paus", "Lumba-lumba"], answer: 1 },
+                    { q: "Jika saat ini di Jakarta (WIB) jam 12.00 Siang, maka di Bali (WITA) jam berapa?", options: ["11.00 Siang", "12.00 Siang", "13.00 (Jam 1 Siang)", "14.00 (Jam 2 Siang)"], answer: 2 },
+                    { q: "Matahari selalu terbit dari sebelah mana?", options: ["Barat", "Timur", "Utara", "Selatan"], answer: 1 },
+                    { q: "Ibukota dari negara Jepang adalah...", options: ["Kyoto", "Osaka", "Seoul", "Tokyo"], answer: 3 },
+                    { q: "Gunung tertinggi di dunia yang berada di perbatasan Nepal dan Tibet adalah...", options: ["Jaya Wijaya", "Fuji", "Everest", "Kilimanjaro"], answer: 2 },
+                    { q: "Bumi adalah planet urutan ke-berapa dari Matahari di tata surya kita?", options: ["Pertama", "Kedua", "Ketiga", "Keempat"], answer: 2 },
+                    { q: "Dalam mitos populer kartun, hewan raksasa Gajah paling takut dengan hewan apa?", options: ["Singa", "Ular", "Tikus", "Semut"], answer: 2 }
+                ]
+            },
+            industri: {
+                title: "🏭 Operasional & Industri",
+                questions: [
+                    { q: "Manakah di bawah ini yang merupakan bagian dari prinsip 5S?", options: ["Santai", "Senyum", "Seiketsu", "Simpan"], answer: 2 },
+                    { q: "Apa konsep dasar dari Jidoka dalam sistem produksi?", options: ["Kecepatan", "Otomatisasi sentuhan manusia", "Produksi massal", "Penumpukan stok"], answer: 1 },
+                    { q: "Tujuan utama dari penerapan Lean Manufacturing adalah...", options: ["Menghilangkan pemborosan (Waste)", "Menambah pekerja", "Menaikkan harga", "Melambat"], answer: 0 },
+                    { q: "Kepanjangan dari K3 di tempat kerja adalah...", options: ["Kebersihan Kerapian Keamanan", "Keselamatan Kelancaran Kerja", "Keselamatan & Kesehatan Kerja", "Keamanan Ketertiban Kantor"], answer: 2 },
+                    { q: "Prinsip FIFO dalam manajemen stok barang singkatan dari...", options: ["First In First Out", "Fast In Fast Out", "First In Fade Out", "Finish In Finish Out"], answer: 0 },
+                    { q: "Jika menemukan masalah/abnormalitas pada mesin, tindakan pertama adalah?", options: ["Pukul mesinnya", "Panggil teman", "Biarkan saja", "Stop, Call, Wait"], answer: 3 },
+                    { q: "Alat Pelindung Diri (APD) untuk bekerja di area yang sangat bising adalah...", options: ["Kacamata Safety", "Earplug/Earmuff", "Sarung Tangan", "Safety Shoes"], answer: 1 },
+                    { q: "Sistem Kanban biasanya digunakan menggunakan alat visual berupa...", options: ["Kartu", "Robot", "Suara Alarm", "Speaker"], answer: 0 },
+                    { q: "Aktivitas Genba / Gemba walk bertujuan untuk...", options: ["Meeting panjang", "Makan siang", "Melihat kondisi lapangan langsung", "Pulang cepat"], answer: 2 },
+                    { q: "Poka-Yoke adalah sebuah metode operasional yang berfungsi untuk...", options: ["Mempercepat lari", "Mencegah kesalahan manusia", "Menunda pekerjaan", "Menghitung gaji"], answer: 1 }
+                ]
+            },
+            sistem: {
+                title: "💻 Teknologi & Sistem",
+                questions: [
+                    { q: "Format teks sederhana apa yang sering digunakan untuk impor bank soal massal ke Moodle?", options: ["MP4", "GIFT / Aiken", "JPEG", "PSD"], answer: 1 },
+                    { q: "Kepanjangan dari SSD pada media penyimpanan komputer adalah...", options: ["Super Speed Drive", "Solid State Drive", "System Storage Disk", "Secure Save Drive"], answer: 1 },
+                    { q: "Di Windows, shortcut untuk membuka Task Manager dengan cepat adalah?", options: ["Ctrl+C", "Alt+F4", "Ctrl+Shift+Esc", "Windows+R"], answer: 2 },
+                    { q: "Kombinasi tombol keyboard untuk melakukan Undo (membatalkan aksi) adalah...", options: ["Ctrl + Z", "Ctrl + X", "Ctrl + Y", "Ctrl + V"], answer: 0 },
+                    { q: "Rumus Microsoft Excel untuk menjumlahkan angka di beberapa sel adalah...", options: ["AVERAGE", "SUM", "COUNT", "IF"], answer: 1 },
+                    { q: "Platform e-learning biasanya disebut dengan LMS. Apa kepanjangannya?", options: ["Learning Management System", "Local Master Server", "Live Meeting System", "Link Management Service"], answer: 0 },
+                    { q: "Tombol fungsi pada keyboard yang sering digunakan untuk 'Refresh' browser adalah...", options: ["F1", "F3", "F5", "F12"], answer: 2 },
+                    { q: "Sistem operasi Windows dikembangkan oleh perusahaan...", options: ["Apple", "Google", "IBM", "Microsoft"], answer: 3 },
+                    { q: "Mode 'Incognito' pada Google Chrome utamanya berfungsi untuk...", options: ["Tidak menyimpan riwayat browsing", "Blokir iklan", "Mempercepat internet", "Menghemat baterai"], answer: 0 },
+                    { q: "File dengan format gambar biasanya menggunakan ekstensi...", options: [".docx", ".mp3", ".jpg / .png", ".xlsx"], answer: 2 }
+                ]
+            },
+            otomotif: {
+                title: "🚗 Otomotif & Kendaraan",
+                questions: [
+                    { q: "Saat menyalakan kendaraan modern dengan tombol (Push Start), mode kelistrikan pertama yang aktif adalah?", options: ["Mesin menyala", "ACC (Aksesoris)", "Lampu Hazard", "Wiper otomatis"], answer: 1 },
+                    { q: "Kendaraan yang 100% bergerak menggunakan daya dari baterai disebut...", options: ["Hybrid", "PHEV", "Full EV (BEV)", "Fuel Cell"], answer: 2 },
+                    { q: "Komponen apa yang berfungsi mengatur perpindahan rasio secara otomatis pada motor matic?", options: ["Karburator", "Radiator", "CVT", "Busi"], answer: 2 },
+                    { q: "Fungsi utama dari cairan radiator (coolant) pada mobil adalah...", options: ["Menambah tenaga", "Mendinginkan suhu mesin", "Membersihkan kaca", "Melumasi rantai"], answer: 1 },
+                    { q: "Jika indikator 'Check Engine' menyala di dashboard, itu menandakan...", options: ["Ada masalah pada mesin/sensor", "Bensin penuh", "Pintu belum rapat", "Lampu luar mati"], answer: 0 },
+                    { q: "Singkatan dari fitur keselamatan ABS pada sistem pengereman kendaraan adalah...", options: ["Auto Brake Sensor", "Anti-lock Braking System", "Aero Brake System", "Active Balance Spring"], answer: 1 },
+                    { q: "Cairan yang berfungsi melumasi dan mencegah gesekan berlebih pada komponen dalam mesin adalah...", options: ["Oli", "Air Wiper", "Minyak Rem", "Bensin"], answer: 0 },
+                    { q: "Pada mobil transmisi manual, pedal paling kiri yang diinjak pengemudi adalah pedal...", options: ["Gas", "Rem Tangan", "Klakson", "Kopling"], answer: 3 },
+                    { q: "Tekanan angin pada ban kendaraan umumnya diukur menggunakan satuan...", options: ["Celcius", "PSI / Bar", "Kilogram", "Liter"], answer: 1 },
+                    { q: "Komponen kelistrikan mesin yang bertugas menyuplai tegangan tinggi ke busi adalah...", options: ["Aki", "Dinamo Ampere", "Koil (Ignition Coil)", "Kabel Massa"], answer: 2 }
+                ]
+            },
+            kuliner: {
+                title: "🍜 Kuliner Nusantara",
+                questions: [
+                    { q: "Menu camilan 'Udang Rambutan' biasanya merujuk pada udang yang dibalut luarnya dengan...", options: ["Rambut jagung", "Kulit pangsit/lumpia tipis", "Mie instan kering", "Tepung panir"], answer: 1 },
+                    { q: "Tren tingkat kepedasan 'Level 1-8' saat ini sangat identik dengan hidangan...", options: ["Es Campur", "Mie Goreng / Mie Nyemek", "Martabak", "Ayam Pop"], answer: 1 },
+                    { q: "Perabotan elektronik dapur yang fungsinya spesifik memasak dan menghangatkan nasi adalah...", options: ["Blender", "Oven", "Rice Cooker", "Dispenser"], answer: 2 },
+                    { q: "Bahan dasar utama yang wajib ada dalam proses memasak Rendang adalah...", options: ["Santan dan Rempah", "Kecap Manis", "Tepung Terigu", "Saus Tomat"], answer: 0 },
+                    { q: "Makanan khas Palembang yang terbuat dari campuran daging ikan giling dan tepung sagu adalah...", options: ["Lumpia", "Pempek", "Batagor", "Tekwan"], answer: 1 },
+                    { q: "Sate Lilit merupakan kuliner tradisional sate yang sangat khas berasal dari daerah...", options: ["Madura", "Padang", "Bali", "Ponorogo"], answer: 2 },
+                    { q: "Gudeg, makanan khas dari Yogyakarta, secara umum memiliki dominasi cita rasa...", options: ["Manis", "Pedas", "Asin Gurih", "Asam"], answer: 0 },
+                    { q: "Bahan dasar utama yang difermentasi untuk membuat tempe adalah...", options: ["Kacang Kedelai", "Biji Jagung", "Singkong", "Kacang Tanah"], answer: 0 },
+                    { q: "Jamu tradisional 'Beras Kencur' dipercaya masyarakat memiliki khasiat utama untuk...", options: ["Menumbuhkan rambut", "Mencegah ngantuk", "Menyegarkan badan & nafsu makan", "Menyembuhkan patah tulang"], answer: 2 },
+                    { q: "Kerak Telor adalah jajanan tradisional otentik yang berasal dari...", options: ["Bandung", "Surabaya", "Medan", "Jakarta (Betawi)"], answer: 3 }
+                ]
+            }
+        };
+
+        let currentCategory = "";
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        
+        // Variabel Statistik
+        let score = 0;
+        let countCorrect = 0;
+        let countWrong = 0;
+        
+        let timeLeft = 10;
+        let timerInterval;
+        let isAnswering = false;
+        let progMode = "auto";
+
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const timerFill = document.getElementById('timer-fill');
+        const activeCategoryText = document.getElementById('active-category');
+        const progressText = document.getElementById('progress-text');
+        const nextBtn = document.getElementById('next-btn');
+
+        function startGame(categoryKey) {
+            // Cek mode yang dipilih (Otomatis atau Manual)
+            const radios = document.getElementsByName('mode');
+            for (let radio of radios) {
+                if (radio.checked) {
+                    progMode = radio.value;
+                    break;
+                }
+            }
+
+            currentCategory = categoryKey;
+            currentQuestions = [...quizData[categoryKey].questions];
+            
+            // Acak urutan 10 soal
+            currentQuestions.sort(() => Math.random() - 0.5);
+            
+            activeCategoryText.innerText = quizData[categoryKey].title;
+            
+            startScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswering = false;
+            timeLeft = 10;
+            timerFill.style.width = '100%';
+            timerFill.classList.remove('timer-warning');
+            nextBtn.style.display = 'none'; 
+            
+            progressText.innerText = `Soal ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+
+            const currentQ = currentQuestions[currentQuestionIndex];
+            questionText.innerText = currentQ.q;
+            
+            optionsContainer.innerHTML = '';
+            currentQ.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 50);
+        }
+
+        function updateTimer() {
+            timeLeft -= 0.05;
+            const percentage = (timeLeft / 10) * 100;
+            timerFill.style.width = percentage + '%';
+
+            if (percentage <= 40) {
+                timerFill.classList.add('timer-warning');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerFill.style.width = '0%';
+                handleTimeOut();
+            }
+        }
+
+        function disableAllButtons() {
+            const buttons = optionsContainer.children;
+            for(let i=0; i<buttons.length; i++){
+                buttons[i].disabled = true;
+            }
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (isAnswering) return;
+            isAnswering = true;
+            clearInterval(timerInterval);
+            disableAllButtons();
+
+            const currentQ = currentQuestions[currentQuestionIndex];
+            const buttons = optionsContainer.children;
+
+            if (selectedIndex === currentQ.answer) {
+                btnElement.classList.add('correct');
+                // Kalkulasi poin berdasarkan sisa waktu (Maksimal ~100 Poin)
+                let timeBonus = Math.ceil(timeLeft * 10);
+                score += timeBonus;
+                countCorrect++;
+            } else {
+                btnElement.classList.add('wrong');
+                buttons[currentQ.answer].classList.add('correct');
+                countWrong++;
+            }
+
+            processNextStep();
+        }
+
+        function handleTimeOut() {
+            if (isAnswering) return;
+            isAnswering = true;
+            disableAllButtons();
+            
+            countWrong++; // Tidak menjawab / Waktu habis dihitung salah
+            
+            const currentQ = currentQuestions[currentQuestionIndex];
+            const buttons = optionsContainer.children;
+            buttons[currentQ.answer].classList.add('correct');
+            
+            processNextStep();
+        }
+
+        function processNextStep() {
+            if (progMode === "auto") {
+                setTimeout(nextQuestion, 1500);
+            } else {
+                nextBtn.style.display = 'block';
+                if (currentQuestionIndex === currentQuestions.length - 1) {
+                    nextBtn.innerText = "Lihat Hasil 🏆";
+                } else {
+                    nextBtn.innerText = "Soal Berikutnya ➡️";
+                }
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            gameScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            
+            // Masukkan data ke HTML
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('correct-count').innerText = countCorrect;
+            document.getElementById('wrong-count').innerText = countWrong;
+            
+            let badge = "";
+            const maxScore = currentQuestions.length * 100; // Total potensial maksimal ~1000 Poin
+            
+            if (score >= maxScore * 0.8) badge = "🏆 Sempurna! Sangat Tepat dan Cepat!";
+            else if (score >= maxScore * 0.5) badge = "🔥 Mantap! Refleks yang Luar Biasa!";
+            else if (score >= maxScore * 0.2) badge = "👍 Lumayan! Coba Lebih Cepat Lagi!";
+            else badge = "😅 Waduh! Kayaknya Kurang Fokus Nih!";
+            
+            document.getElementById('badge-text').innerText = badge;
+        }
+    </script>
+</body>
+</html>
